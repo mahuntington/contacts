@@ -1,7 +1,9 @@
 class PeopleController < ApplicationController
     def index
-        # render({ :json => { :message => 'hi', :status => 200 } })
-        # render json: message: 'hi', status: 200 # doesn't work because nested objects are unguessable
-        render json: { message: 'hi', status: 200 }
+        render json: [
+            { name: 'Joey', age:12 },
+            { name: 'Sarah', age:52 },
+            { name: 'Cthulhu', age: 8000 }
+        ]
     end
 end
