@@ -1,6 +1,13 @@
 class Person
-    def self.all # a static function that's called on the class itself, not an instance
-        [ ## ruby functions return the last line of code, so no need for an explicit 'return' statement
+    # connect to postgres
+    DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
+
+    def self.all
+        results = DB.exec("SELECT * FROM people;")
+        results.each do |result|
+            puts result
+        end
+        [
             { name: 'Joey', age:12 },
             { name: 'Sarah', age:52 },
             { name: 'Cthulhu', age: 8000 }
