@@ -2,15 +2,14 @@ class Person
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
+    def initialize(opts = {})
+        @id = opts["id"].to_i
+        @name = opts["name"]
+        @age = opts["age"]
+    end
+
     def self.all
         results = DB.exec("SELECT * FROM people;")
-        results.each do |result|
-            puts result
-        end
-        [
-            { name: 'Joey', age:12 },
-            { name: 'Sarah', age:52 },
-            { name: 'Cthulhu', age: 8000 }
-        ]
+        return results.map { |result| Person.new(result) }
     end
 end
