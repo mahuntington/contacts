@@ -6,7 +6,7 @@ class PeopleController < ApplicationController
     end
 
     def show
-        render json: Person.find(params[:id])
+        render json: Person.find(params["id"])
     end
 
     def create
