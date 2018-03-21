@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   get '/people/:id', to: 'people#show'
   post '/people', to: 'people#create'
   delete '/people/:id', to: 'people#delete'
+  put '/people/:id', to: 'people#update'
 end

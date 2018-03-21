@@ -16,4 +16,8 @@ class PeopleController < ApplicationController
     def delete
         render json: Person.delete(params["id"])
     end
+
+    def update
+        render json: Person.update(params["id"], params["person"])
+    end
 end
