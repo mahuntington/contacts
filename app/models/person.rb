@@ -17,4 +17,9 @@ class Person
         results = DB.exec("SELECT * FROM people WHERE id=#{id};")
         return Person.new(results.first)
     end
+
+    def self.create(opts={})
+        results = DB.exec("INSERT INTO people (name, age) VALUES ( '#{opts["name"]}', #{opts["age"]} );")
+        return { created:true }
+    end
 end
