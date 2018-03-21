@@ -12,4 +12,9 @@ class Person
         results = DB.exec("SELECT * FROM people;")
         return results.map { |result| Person.new(result) }
     end
+
+    def self.find(id)
+        results = DB.exec("SELECT * FROM people WHERE id=#{id};")
+        return Person.new(results.first)
+    end
 end
