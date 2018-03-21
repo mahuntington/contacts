@@ -17,4 +17,7 @@ Rails.application.routes.draw do
   post '/companies', to: 'companies#create'
   delete '/companies/:id', to: 'companies#delete'
   put '/companies/:id', to: 'companies#update'
+
+  post '/locations/:id/people', to: 'people#create'
+
 end

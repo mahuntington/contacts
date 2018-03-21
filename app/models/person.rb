@@ -6,6 +6,9 @@ class Person
         @id = opts["id"].to_i
         @name = opts["name"]
         @age = opts["age"].to_i
+        if opts["home_id"]
+            @home_id = opts["home_id"]
+        end
     end
 
     def self.all
@@ -19,7 +22,7 @@ class Person
     end
 
     def self.create(opts={})
-        results = DB.exec("INSERT INTO people (name, age) VALUES ( '#{opts["name"]}', #{opts["age"]} );")
+        results = DB.exec("INSERT INTO people (name, age, home_id) VALUES ( '#{opts["name"]}', #{opts["age"]}, #{opts["home_id"]} );")
         return { created:true }
     end
 

@@ -10,6 +10,11 @@ class PeopleController < ApplicationController
     end
 
     def create
+        if params["id"]
+            params["person"]["home_id"] = params["id"].to_i
+        else
+            params["person"]["home_id"] = "NULL"
+        end
         render json: Person.create(params["person"])
     end
 
