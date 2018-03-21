@@ -5,7 +5,7 @@ class Person
     def initialize(opts = {})
         @id = opts["id"].to_i
         @name = opts["name"]
-        @age = opts["age"]
+        @age = opts["age"].to_i
     end
 
     def self.all
