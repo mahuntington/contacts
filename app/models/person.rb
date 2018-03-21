@@ -22,4 +22,9 @@ class Person
         results = DB.exec("INSERT INTO people (name, age) VALUES ( '#{opts["name"]}', #{opts["age"]} );")
         return { created:true }
     end
+
+    def self.delete(id)
+        results = DB.exec("DELETE FROM people WHERE id=#{id};")
+        return { deleted: true }
+    end
 end
