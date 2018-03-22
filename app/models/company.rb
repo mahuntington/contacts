@@ -1,4 +1,5 @@
 class Company
+    attr_reader :id, :name, :industry
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 

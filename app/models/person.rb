@@ -1,4 +1,5 @@
 class Person
+    attr_reader :id, :name, :age, :home_id
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
