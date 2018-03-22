@@ -50,13 +50,13 @@ class Person
         return Person.new(results.first)
     end
 
-    def self.setHome(person_id, home_id)
+    def self.setHome(person_id, home)
         results = DB.exec(
             <<-SQL
                 UPDATE people
-                SET home_id = #{home_id}
+                SET home_id = #{home.id}
                 WHERE id = #{person_id}
-                RETURNING id, name, age, home_id;
+                RETURNING id, name, age;
             SQL
         )
         return Person.new(results.first)
