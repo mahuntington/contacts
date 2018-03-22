@@ -7,7 +7,7 @@ class Person
         @name = opts["name"]
         @age = opts["age"].to_i
         if opts["home_id"]
-            @home_id = opts["home_id"]
+            @home_id = opts["home_id"].to_i
         end
     end
 
@@ -24,9 +24,9 @@ class Person
     def self.create(opts={})
         results = DB.exec(
             <<-SQL
-                INSERT INTO people (name, age)
-                VALUES ( '#{opts["name"]}', #{opts["age"]} )
-                RETURNING id, name, age;
+                INSERT INTO people (name, age, home_id)
+                VALUES ( '#{opts["name"]}', #{opts["age"]},  #{opts["home_id"] ? opts["home_id"] : "NULL"})
+                RETURNING id, name, age, home_id;
             SQL
         )
         return Person.new(results.first)
