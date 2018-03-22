@@ -50,7 +50,7 @@ class Person
         return Person.new(results.first)
     end
 
-    def self.addHome(person_id, home_id)
+    def self.setHome(person_id, home_id)
         results = DB.exec(
             <<-SQL
                 UPDATE people
