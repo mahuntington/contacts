@@ -22,8 +22,14 @@ class Person
     end
 
     def self.create(opts={})
-        results = DB.exec("INSERT INTO people (name, age, home_id) VALUES ( '#{opts["name"]}', #{opts["age"]}, #{opts["home_id"]} );")
-        return { created:true }
+        results = DB.exec(
+            <<-SQL
+                INSERT INTO people (name, age)
+                VALUES ( '#{opts["name"]}', #{opts["age"]} )
+                RETURNING id, name, age;
+            SQL
+        )
+        return Person.new(results.first)
     end
 
     def self.delete(id)
@@ -32,7 +38,14 @@ class Person
     end
 
     def self.update(id, opts={})
-        results = DB.exec("UPDATE people SET name='#{opts["name"]}', age=#{opts["age"]} WHERE id=#{id} ;")
-        return { updated: true }
+        results = DB.exec(
+            <<-SQL
+                UPDATE people
+                SET name='#{opts["name"]}', age=#{opts["age"]}
+                WHERE id=#{id}
+                RETURNING id, name, age;
+            SQL
+        )
+        return Person.new(results.first)
     end
 end

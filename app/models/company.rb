@@ -19,8 +19,14 @@ class Company
     end
 
     def self.create(opts={})
-        results = DB.exec("INSERT INTO companies (name, industry) VALUES ( '#{opts["name"]}', '#{opts["industry"]}' );")
-        return { created:true }
+        results = DB.exec(
+            <<-SQL
+                INSERT INTO companies (name, industry)
+                VALUES ( '#{opts["name"]}', '#{opts["industry"]}' )
+                RETURNING id, name, industry;
+            SQL
+        )
+        return Company.new(results.first)
     end
 
     def self.delete(id)
@@ -29,7 +35,14 @@ class Company
     end
 
     def self.update(id, opts={})
-        results = DB.exec("UPDATE companies SET name='#{opts["name"]}', industry='#{opts["industry"]}' WHERE id=#{id} ;")
-        return { updated: true }
+        results = DB.exec(
+            <<-SQL
+                UPDATE companies
+                SET name='#{opts["name"]}', industry='#{opts["industry"]}'
+                WHERE id=#{id}
+                RETURNING id, name, industry;
+            SQL
+        )
+        return Company.new(results.first)
     end
 end

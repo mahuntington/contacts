@@ -20,8 +20,14 @@ class Location
     end
 
     def self.create(opts={})
-        results = DB.exec("INSERT INTO locations (street, city, state) VALUES ( '#{opts["street"]}', '#{opts["city"]}', '#{opts["state"]}' );")
-        return { created:true }
+        results = DB.exec(
+            <<-SQL
+                INSERT INTO locations (street, city, state)
+                VALUES ( '#{opts["street"]}', '#{opts["city"]}', '#{opts["state"]}' )
+                RETURNING id, street, city, state;
+            SQL
+        )
+        return Location.new(results.first)
     end
 
     def self.delete(id)
@@ -30,7 +36,14 @@ class Location
     end
 
     def self.update(id, opts={})
-        results = DB.exec("UPDATE locations SET street='#{opts["street"]}', city='#{opts["city"]}', state='#{opts["state"]}' WHERE id=#{id} ;")
-        return { updated: true }
+        results = DB.exec(
+            <<-SQL
+                UPDATE locations
+                SET street='#{opts["street"]}', city='#{opts["city"]}', state='#{opts["state"]}'
+                WHERE id=#{id}
+                RETURNING id, street, city, state;
+            SQL
+        )
+        return Location.new(results.first)
     end
 end
