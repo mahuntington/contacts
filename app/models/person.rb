@@ -1,5 +1,5 @@
 class Person
-    attr_reader :id, :name, :age, :home_id
+    attr_reader :id, :name, :age, :home
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
@@ -8,7 +8,7 @@ class Person
         @name = opts["name"]
         @age = opts["age"].to_i
         if opts["home_id"]
-            @home_id = opts["home_id"].to_i
+            @home = Location.find(opts["home_id"].to_i)
         end
     end
 
@@ -60,5 +60,10 @@ class Person
             SQL
         )
         return Person.new(results.first)
+    end
+
+    def self.findByHomeId(home_id)
+        results = DB.exec("SELECT id, name, age FROM people WHERE home_id = #{home_id}")
+        return results.map { |result| Person.new(result) }
     end
 end

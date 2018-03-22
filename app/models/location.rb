@@ -1,5 +1,5 @@
 class Location
-    attr_reader :id, :street, :city, :state
+    attr_reader :id, :street, :city, :state, :inhabitants
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
@@ -8,6 +8,7 @@ class Location
         @street = opts["street"]
         @city = opts["city"]
         @state = opts["state"]
+        @inhabitants = Person.findByHomeId(@id)
     end
 
     def self.all
