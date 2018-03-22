@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   delete '/companies/:id', to: 'companies#delete'
   put '/companies/:id', to: 'companies#update'
 
-  post '/locations/:id/people', to: 'people#create'
-  post '/people/:id/locations', to: 'locations#create'
+  post '/locations/:id/inhabitants', to: 'people#create'
+  post '/people/:id/home', to: 'locations#create'
 
 end
