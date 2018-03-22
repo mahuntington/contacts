@@ -48,4 +48,16 @@ class Person
         )
         return Person.new(results.first)
     end
+
+    def self.addHome(person_id, home_id)
+        results = DB.exec(
+            <<-SQL
+                UPDATE people
+                SET home_id = #{home_id}
+                WHERE id = #{person_id}
+                RETURNING id, name, age, home_id;
+            SQL
+        )
+        return Person.new(results.first)
+    end
 end

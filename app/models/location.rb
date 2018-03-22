@@ -1,4 +1,5 @@
 class Location
+    attr_reader :id, :street, :city, :state
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 

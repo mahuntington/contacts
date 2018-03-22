@@ -19,5 +19,6 @@ Rails.application.routes.draw do
   put '/companies/:id', to: 'companies#update'
 
   post '/locations/:id/people', to: 'people#create'
+  post '/people/:id/locations', to: 'locations#create'
 
 end

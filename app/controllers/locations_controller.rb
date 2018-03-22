@@ -10,7 +10,11 @@ class LocationsController < ApplicationController
     end
 
     def create
-        render json: Location.create(params["location"])
+        created_location = Location.create(params["location"])
+        if params["id"]
+            updated_person = Person.addHome(params["id"], created_location.id)
+        end
+        render json: { location: created_location, person: updated_person }
     end
 
     def delete
