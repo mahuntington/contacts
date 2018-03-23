@@ -42,9 +42,9 @@ class Person
         results = DB.exec(
             <<-SQL
                 UPDATE people
-                SET name='#{opts["name"]}', age=#{opts["age"]}
+                SET name='#{opts["name"]}', age=#{opts["age"]}, home_id=#{opts["home_id"] ? opts["home_id"] : "NULL"}
                 WHERE id=#{id}
-                RETURNING id, name, age;
+                RETURNING id, name, age, home_id;
             SQL
         )
         return Person.new(results.first)
