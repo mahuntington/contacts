@@ -7,19 +7,84 @@ class Person
         @id = opts["id"].to_i
         @name = opts["name"]
         @age = opts["age"].to_i
-        if opts["home_id"]
-            @home = Location.find(opts["home_id"].to_i)
+        if opts["home"]
+            @home = opts["home"]
         end
     end
 
     def self.all
-        results = DB.exec("SELECT * FROM people;")
-        return results.map { |result| Person.new(result) }
+        results = DB.exec(
+            <<-SQL
+                SELECT
+                    people.*,
+                    locations.street,
+                    locations.city,
+                    locations.state
+                FROM people
+                LEFT JOIN locations
+                    ON people.home_id = locations.id
+            SQL
+        )
+        return results.map do |result|
+            if result["home_id"]
+                home = Location.new(
+                    {
+                        "id" => result["home_id"],
+                        "street" => result["street"],
+                        "city" => result["city"],
+                        "state" => result["state"],
+                    }
+                )
+            else
+                home = nil
+            end
+            Person.new(
+                {
+                    "id" => result["id"],
+                    "name" => result["name"],
+                    "age" => result["age"],
+                    "home" => home,
+                }
+            )
+        end
     end
 
     def self.find(id)
-        results = DB.exec("SELECT * FROM people WHERE id=#{id};")
-        return Person.new(results.first)
+        results = DB.exec(
+            <<-SQL
+                SELECT
+                    people.*,
+                    locations.street,
+                    locations.city,
+                    locations.state
+                FROM people
+                LEFT JOIN locations
+                    ON people.home_id = locations.id
+                WHERE people.id=#{id};
+            SQL
+        )
+        result = results.first
+        if result["home_id"]
+            home = Location.new(
+                {
+                    "id" => result["home_id"],
+                    "street" => result["street"],
+                    "city" => result["city"],
+                    "state" => result["state"],
+                }
+            )
+        else
+            home = nil
+        end
+        person =  Person.new(
+            {
+                "id" => result["id"],
+                "name" => result["name"],
+                "age" => result["age"],
+                "home" => home,
+            }
+        )
+        return person
     end
 
     def self.create(opts={})
