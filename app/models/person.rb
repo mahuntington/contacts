@@ -126,9 +126,4 @@ class Person
         )
         return Person.new(results.first)
     end
-
-    def self.findByHomeId(home_id)
-        results = DB.exec("SELECT id, name, age FROM people WHERE home_id = #{home_id}")
-        return results.map { |result| Person.new(result) }
-    end
 end

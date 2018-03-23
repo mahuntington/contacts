@@ -1,6 +1,6 @@
 class Location
     attr_reader :id, :street, :city, :state, :inhabitants
-    # connect to postgres
+
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
     def initialize(opts = {})
@@ -8,17 +8,83 @@ class Location
         @street = opts["street"]
         @city = opts["city"]
         @state = opts["state"]
-        @inhabitants = Person.findByHomeId(@id)
+        if opts["inhabitants"]
+            @inhabitants = opts["inhabitants"]
+        end
     end
 
     def self.all
-        results = DB.exec("SELECT * FROM locations;")
-        return results.map { |result| Location.new(result) }
+        results = DB.exec(
+            <<-SQL
+                SELECT
+                    locations.*,
+                    people.id AS person_id,
+                    people.name,
+                    people.age
+                FROM locations
+                LEFT JOIN people
+                ON locations.id = people.home_id
+            SQL
+        )
+        locations = []
+        current_location_id = nil
+        results.each do |result|
+            if result["id"] != current_location_id
+                current_location_id = result["id"]
+                locations.push(
+                    Location.new({
+                        "id" => result["id"],
+                        "street" => result["street"],
+                        "city" => result["city"],
+                        "state" => result["state"],
+                        "inhabitants" => []
+                    })
+                )
+            end
+            if result["person_id"]
+                new_person = Person.new({
+                    "id" => result["person_id"],
+                    "name" => result["name"],
+                    "age" => result["age"],
+                })
+                locations.last.inhabitants.push(new_person)
+            end
+        end
+        return locations
     end
 
     def self.find(id)
-        results = DB.exec("SELECT * FROM locations WHERE id=#{id};")
-        return Location.new(results.first)
+        results = DB.exec(
+            <<-SQL
+                SELECT
+                    locations.*,
+                    people.id AS person_id,
+                    people.name,
+                    people.age
+                FROM locations
+                LEFT JOIN people
+                ON locations.id = people.home_id
+                WHERE locations.id=#{id};
+            SQL
+        )
+        inhabitants = []
+        results.each do |result|
+            if result["person_id"]
+                inhabitants.push Person.new({
+                    "id" => result["person_id"],
+                    "name" => result["name"],
+                    "age" => result["age"]
+                })
+            end
+        end
+
+        return Location.new({
+            "id" => results.first["id"],
+            "street" => results.first["street"],
+            "city" => results.first["city"],
+            "state" => results.first["state"],
+            "inhabitants" => inhabitants
+        })
     end
 
     def self.create(opts={})
