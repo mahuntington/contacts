@@ -1,5 +1,5 @@
 class Person
-    attr_reader :id, :name, :age, :home
+    attr_reader :id, :name, :age, :home, :employers
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
@@ -9,6 +9,9 @@ class Person
         @age = opts["age"].to_i
         if opts["home"]
             @home = opts["home"]
+        end
+        if opts["employers"]
+            @employers = opts["employers"]
         end
     end
 
@@ -56,10 +59,17 @@ class Person
                     people.*,
                     locations.street,
                     locations.city,
-                    locations.state
+                    locations.state,
+                    companies.id AS company_id,
+                    companies.name AS company,
+                    companies.industry
                 FROM people
                 LEFT JOIN locations
                     ON people.home_id = locations.id
+                LEFT JOIN jobs
+                    ON people.id = jobs.person_id
+                LEFT JOIN companies
+                    ON jobs.company_id = companies.id
                 WHERE people.id=#{id};
             SQL
         )
@@ -76,12 +86,20 @@ class Person
         else
             home = nil
         end
+        employers = results.map do |result|
+            Company.new({
+                "id" => result["company_id"],
+                "name" => result["company"],
+                "industry" => result["industry"],
+            })
+        end
         person =  Person.new(
             {
                 "id" => result["id"],
                 "name" => result["name"],
                 "age" => result["age"],
                 "home" => home,
+                "employers" => employers
             }
         )
         return person
