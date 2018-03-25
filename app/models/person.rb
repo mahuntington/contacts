@@ -22,34 +22,57 @@ class Person
                     people.*,
                     locations.street,
                     locations.city,
-                    locations.state
+                    locations.state,
+                    companies.id AS company_id,
+                    companies.name AS company,
+                    companies.industry
                 FROM people
                 LEFT JOIN locations
                     ON people.home_id = locations.id
+                LEFT JOIN jobs
+                    ON people.id = jobs.person_id
+                LEFT JOIN companies
+                    ON jobs.company_id = companies.id
             SQL
         )
-        return results.map do |result|
-            if result["home_id"]
-                home = Location.new(
+        people = []
+        last_person_id = nil
+        results.each do |result|
+            if result["id"] != last_person_id
+                last_person_id = result["id"]
+                if result["home_id"]
+                    home = Location.new(
+                        {
+                            "id" => result["home_id"],
+                            "street" => result["street"],
+                            "city" => result["city"],
+                            "state" => result["state"],
+                        }
+                    )
+                else
+                    home = nil
+                end
+                new_person = Person.new(
                     {
-                        "id" => result["home_id"],
-                        "street" => result["street"],
-                        "city" => result["city"],
-                        "state" => result["state"],
+                        "id" => result["id"],
+                        "name" => result["name"],
+                        "age" => result["age"],
+                        "home" => home,
+                        "employers" => []
                     }
                 )
-            else
-                home = nil
+                people.push(new_person)
             end
-            Person.new(
-                {
-                    "id" => result["id"],
-                    "name" => result["name"],
-                    "age" => result["age"],
-                    "home" => home,
-                }
-            )
+            if result["company_id"]
+                employer = Company.new({
+                    "id" => result["company_id"],
+                    "name" => result["company"],
+                    "industry" => result["industry"]
+                })
+                people.last.employers.push(employer)
+            end
         end
+        return people
     end
 
     def self.find(id)

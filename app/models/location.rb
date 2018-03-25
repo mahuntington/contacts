@@ -27,10 +27,9 @@ class Location
             SQL
         )
         locations = []
-        current_location_id = nil
+        last_location_id = nil
         results.each do |result|
-            if result["id"] != current_location_id
-                current_location_id = result["id"]
+            if result["id"] != last_location_id
                 locations.push(
                     Location.new({
                         "id" => result["id"],
@@ -40,6 +39,7 @@ class Location
                         "inhabitants" => []
                     })
                 )
+                last_location_id = result["id"]
             end
             if result["person_id"]
                 new_person = Person.new({
