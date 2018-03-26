@@ -13,8 +13,42 @@ class Company
     end
 
     def self.all
-        results = DB.exec("SELECT * FROM companies;")
-        return results.map { |result| Company.new(result) }
+        results = DB.exec(
+            <<-SQL
+                SELECT
+                    companies.*,
+                    people.id AS person_id,
+                    people.name AS person_name,
+                    people.age
+                FROM companies
+                LEFT JOIN jobs
+                    ON companies.id = jobs.company_id
+                LEFT JOIN people
+                    ON jobs.person_id = people.id;
+            SQL
+        )
+        companies = []
+        last_company_id = nil;
+        results.each do |result|
+            if result["id"] != last_company_id
+                company = Company.new({
+                    "id" => result["id"],
+                    "name" => result["name"],
+                    "location" => result["location"],
+                    "employees" => []
+                });
+                companies.push(company)
+                last_company_id = result["id"]
+            end
+            if result["person_id"]
+                companies.last.employees.push(Person.new({
+                    "id" => result["person_id"],
+                    "name" => result["person_name"],
+                    "age" => result["age"]
+                }))
+            end
+        end
+        return companies
     end
 
     def self.find(id)
