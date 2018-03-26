@@ -1,5 +1,5 @@
 class Company
-    attr_reader :id, :name, :industry
+    attr_reader :id, :name, :industry, :employees
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
@@ -7,6 +7,9 @@ class Company
         @id = opts["id"].to_i
         @name = opts["name"]
         @age = opts["industry"]
+        if opts["employees"]
+            @employees = opts["employees"]
+        end
     end
 
     def self.all
@@ -15,8 +18,36 @@ class Company
     end
 
     def self.find(id)
-        results = DB.exec("SELECT * FROM companies WHERE id=#{id};")
-        return Company.new(results.first)
+        results = DB.exec(<<-SQL
+                SELECT
+                    companies.*,
+                    people.id AS person_id,
+                    people.name AS person_name,
+                    people.age
+                FROM companies
+                LEFT JOIN jobs
+                    ON companies.id = jobs.company_id
+                LEFT JOIN people
+                    ON jobs.person_id = people.id
+                WHERE companies.id=#{id};
+            SQL
+        )
+        employees = [];
+        results.each do |result|
+            if result["person_id"]
+                employees.push(Person.new({
+                    "id" => result["person_id"],
+                    "name" => result["person_name"],
+                    "age" => result["age"]
+                }))
+            end
+        end
+        return Company.new({
+            "id" => results.first["id"],
+            "name" => results.first["name"],
+            "industry" => results.first["industry"],
+            "employees" => employees
+        })
     end
 
     def self.create(opts={})
