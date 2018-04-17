@@ -6,7 +6,7 @@ class Company
     def initialize(opts = {})
         @id = opts["id"].to_i
         @name = opts["name"]
-        @age = opts["industry"]
+        @industry = opts["industry"]
         if opts["employees"]
             @employees = opts["employees"]
         end
@@ -34,7 +34,7 @@ class Company
                 company = Company.new({
                     "id" => result["id"],
                     "name" => result["name"],
-                    "location" => result["location"],
+                    "industry" => result["industry"],
                     "employees" => []
                 });
                 companies.push(company)
