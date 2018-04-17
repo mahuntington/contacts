@@ -105,12 +105,16 @@ class Person
                 }
             )
         end
-        employers = results.map do |result|
-            Company.new({
-                "id" => result["company_id"],
-                "name" => result["company"],
-                "industry" => result["industry"],
-            })
+
+        employers = []
+        results.each do |result|
+            if result["company_id"]
+                employers.push(Company.new({
+                    "id" => result["company_id"],
+                    "name" => result["company"],
+                    "industry" => result["industry"],
+                }))
+            end
         end
         person =  Person.new(
             {
