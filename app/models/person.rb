@@ -49,8 +49,6 @@ class Person
                             "state" => result["state"],
                         }
                     )
-                else
-                    home = nil
                 end
                 new_person = Person.new(
                     {
@@ -106,8 +104,6 @@ class Person
                     "state" => result["state"],
                 }
             )
-        else
-            home = nil
         end
         employers = results.map do |result|
             Company.new({
