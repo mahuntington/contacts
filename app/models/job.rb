@@ -3,20 +3,25 @@ class Job
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
-    def initialize(opts = {})
-        @id = opts["id"].to_i
-        @person_id = opts["person_id"].to_i
-        @company_id = opts["company_id"].to_i
-    end
-
     def self.all
         results = DB.exec("SELECT * FROM jobs;")
-        return results.map { |result| Job.new(result) }
+        return results.map do |result|
+            {
+                :id => result["id"].to_i,
+                :person_id => result["person_id"].to_i,
+                :company_id => result["company_id"].to_i,
+            }
+        end
     end
 
     def self.find(id)
         results = DB.exec("SELECT * FROM jobs WHERE id=#{id};")
-        return Job.new(results.first)
+        # return Job.new(results.first)
+        return {
+            :id => results.first["id"].to_i,
+            :person_id => results.first["person_id"].to_i,
+            :company_id => results.first["company_id"].to_i,
+        }
     end
 
     def self.create(opts={})
@@ -27,7 +32,11 @@ class Job
                 RETURNING id, person_id, company_id;
             SQL
         )
-        return Job.new(results.first)
+        return {
+            :id => results.first["id"].to_i,
+            :person_id => results.first["person_id"].to_i,
+            :company_id => results.first["company_id"].to_i,
+        }
     end
 
     def self.delete(id)
@@ -44,6 +53,10 @@ class Job
                 RETURNING id, person_id, company_id;
             SQL
         )
-        return Job.new(results.first)
+        return {
+            :id => results.first["id"].to_i,
+            :person_id => results.first["person_id"].to_i,
+            :company_id => results.first["company_id"].to_i,
+        }
     end
 end
