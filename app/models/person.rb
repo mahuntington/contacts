@@ -28,14 +28,12 @@ class Person
             if result["id"] != last_person_id
                 last_person_id = result["id"]
                 if result["home_id"]
-                    home = Location.new(
-                        {
-                            "id" => result["home_id"],
-                            "street" => result["street"],
-                            "city" => result["city"],
-                            "state" => result["state"],
-                        }
-                    )
+                    home = {
+                        "id" => result["home_id"],
+                        "street" => result["street"],
+                        "city" => result["city"],
+                        "state" => result["state"],
+                    }
                 end
                 new_person = {
                     "id" => result["id"],
@@ -81,14 +79,12 @@ class Person
         )
         result = results.first
         if result["home_id"]
-            home = Location.new(
-                {
-                    "id" => result["home_id"],
-                    "street" => result["street"],
-                    "city" => result["city"],
-                    "state" => result["state"],
-                }
-            )
+            home = {
+                "id" => result["home_id"],
+                "street" => result["street"],
+                "city" => result["city"],
+                "state" => result["state"],
+            }
         end
 
         employers = []

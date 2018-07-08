@@ -1,17 +1,6 @@
 class Location
-    attr_reader :id, :street, :city, :state, :inhabitants
 
-    DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
-
-    def initialize(opts = {})
-        @id = opts["id"].to_i
-        @street = opts["street"]
-        @city = opts["city"]
-        @state = opts["state"]
-        if opts["inhabitants"]
-            @inhabitants = opts["inhabitants"]
-        end
-    end
+    DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'contacts'})
 
     def self.all
         results = DB.exec(
@@ -31,13 +20,13 @@ class Location
         results.each do |result|
             if result["id"] != last_location_id
                 locations.push(
-                    Location.new({
-                        "id" => result["id"],
+                    {
+                        "id" => result["id"].to_i,
                         "street" => result["street"],
                         "city" => result["city"],
                         "state" => result["state"],
                         "inhabitants" => []
-                    })
+                    }
                 )
                 last_location_id = result["id"]
             end
@@ -47,7 +36,7 @@ class Location
                     "name" => result["name"],
                     "age" => result["age"].to_i,
                 }
-                locations.last.inhabitants.push(new_person)
+                locations.last["inhabitants"].push(new_person)
             end
         end
         return locations
@@ -78,13 +67,13 @@ class Location
             end
         end
 
-        return Location.new({
-            "id" => results.first["id"],
+        return {
+            "id" => results.first["id"].to_i,
             "street" => results.first["street"],
             "city" => results.first["city"],
             "state" => results.first["state"],
             "inhabitants" => inhabitants
-        })
+        }
     end
 
     def self.create(opts={})
@@ -95,7 +84,12 @@ class Location
                 RETURNING id, street, city, state;
             SQL
         )
-        return Location.new(results.first)
+        return {
+            "id" => results.first["id"],
+            "street" => results.first["street"],
+            "city" => results.first["city"],
+            "state" => results.first["state"]
+        }
     end
 
     def self.delete(id)
@@ -112,6 +106,11 @@ class Location
                 RETURNING id, street, city, state;
             SQL
         )
-        return Location.new(results.first)
+        return {
+            "id" => results.first["id"],
+            "street" => results.first["street"],
+            "city" => results.first["city"],
+            "state" => results.first["state"]
+        }
     end
 end
