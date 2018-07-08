@@ -1,5 +1,4 @@
 class Job
-    attr_reader :id, :job_id, :company_id
     # connect to postgres
     DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
 
