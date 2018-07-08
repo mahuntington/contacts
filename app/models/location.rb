@@ -42,11 +42,11 @@ class Location
                 last_location_id = result["id"]
             end
             if result["person_id"]
-                new_person = Person.new({
-                    "id" => result["person_id"],
+                new_person = {
+                    "id" => result["person_id"].to_i,
                     "name" => result["name"],
-                    "age" => result["age"],
-                })
+                    "age" => result["age"].to_i,
+                }
                 locations.last.inhabitants.push(new_person)
             end
         end
@@ -70,10 +70,10 @@ class Location
         inhabitants = []
         results.each do |result|
             if result["person_id"]
-                inhabitants.push Person.new({
-                    "id" => result["person_id"],
+                inhabitants.push({
+                    "id" => result["person_id"].to_i,
                     "name" => result["name"],
-                    "age" => result["age"]
+                    "age" => result["age"].to_i,
                 })
             end
         end

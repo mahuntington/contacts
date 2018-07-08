@@ -1,19 +1,6 @@
 class Person
-    attr_reader :id, :name, :age, :home, :employers
     # connect to postgres
-    DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
-
-    def initialize(opts = {})
-        @id = opts["id"].to_i
-        @name = opts["name"]
-        @age = opts["age"].to_i
-        if opts["home"]
-            @home = opts["home"]
-        end
-        if opts["employers"]
-            @employers = opts["employers"]
-        end
-    end
+    DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'contacts'})
 
     def self.all
         results = DB.exec(
@@ -50,15 +37,13 @@ class Person
                         }
                     )
                 end
-                new_person = Person.new(
-                    {
-                        "id" => result["id"],
-                        "name" => result["name"],
-                        "age" => result["age"],
-                        "home" => home,
-                        "employers" => []
-                    }
-                )
+                new_person = {
+                    "id" => result["id"],
+                    "name" => result["name"],
+                    "age" => result["age"],
+                    "home" => home,
+                    "employers" => []
+                }
                 people.push(new_person)
             end
             if result["company_id"]
@@ -67,7 +52,7 @@ class Person
                     "name" => result["company"],
                     "industry" => result["industry"]
                 })
-                people.last.employers.push(employer)
+                people.last["employers"].push(employer)
             end
         end
         return people
@@ -116,15 +101,13 @@ class Person
                 }))
             end
         end
-        person =  Person.new(
-            {
-                "id" => result["id"],
-                "name" => result["name"],
-                "age" => result["age"],
-                "home" => home,
-                "employers" => employers
-            }
-        )
+        person =  {
+            "id" => result["id"],
+            "name" => result["name"],
+            "age" => result["age"],
+            "home" => home,
+            "employers" => employers
+        }
         return person
     end
 
@@ -136,12 +119,17 @@ class Person
                 RETURNING id, name, age, home_id;
             SQL
         )
-        return Person.new(results.first)
+        return {
+            "id" => results.first["id"].to_i,
+            "name" => results.first["name"],
+            "age" => results.first["age"].to_i,
+            "home_id" => results.first["home_id"].to_i,
+        }
     end
 
     def self.delete(id)
         results = DB.exec("DELETE FROM people WHERE id=#{id};")
-        return { deleted: true }
+        return { "deleted" => true }
     end
 
     def self.update(id, opts={})
@@ -153,7 +141,12 @@ class Person
                 RETURNING id, name, age, home_id;
             SQL
         )
-        return Person.new(results.first)
+        return {
+            "id" => results.first["id"].to_i,
+            "name" => results.first["name"],
+            "age" => results.first["age"].to_i,
+            "home_id" => results.first["home_id"].to_i,
+        }
     end
 
     def self.setHome(person_id, home)
@@ -162,9 +155,14 @@ class Person
                 UPDATE people
                 SET home_id = #{home.id}
                 WHERE id = #{person_id}
-                RETURNING id, name, age;
+                RETURNING id, name, age, home_id;
             SQL
         )
-        return Person.new(results.first)
+        return {
+            "id" => results.first["id"].to_i,
+            "name" => results.first["name"],
+            "age" => results.first["age"].to_i,
+            "home_id" => results.first["home_id"].to_i,
+        }
     end
 end

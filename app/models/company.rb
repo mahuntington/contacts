@@ -41,11 +41,11 @@ class Company
                 last_company_id = result["id"]
             end
             if result["person_id"]
-                companies.last.employees.push(Person.new({
-                    "id" => result["person_id"],
+                companies.last.employees.push({
+                    "id" => result["person_id"].to_i,
                     "name" => result["person_name"],
-                    "age" => result["age"]
-                }))
+                    "age" => result["age"].to_i,
+                })
             end
         end
         return companies
@@ -69,11 +69,11 @@ class Company
         employees = [];
         results.each do |result|
             if result["person_id"]
-                employees.push(Person.new({
-                    "id" => result["person_id"],
+                employees.push({
+                    "id" => result["person_id"].to_i,
                     "name" => result["person_name"],
-                    "age" => result["age"]
-                }))
+                    "age" => result["age"].to_i,
+                })
             end
         end
         return Company.new({
