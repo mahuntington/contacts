@@ -6,9 +6,9 @@ class Job
         results = DB.exec("SELECT * FROM jobs;")
         return results.map do |result|
             {
-                :id => result["id"].to_i,
-                :person_id => result["person_id"].to_i,
-                :company_id => result["company_id"].to_i,
+                "id" => result["id"].to_i,
+                "person_id" => result["person_id"].to_i,
+                "company_id" => result["company_id"].to_i,
             }
         end
     end
@@ -17,9 +17,9 @@ class Job
         results = DB.exec("SELECT * FROM jobs WHERE id=#{id};")
         # return Job.new(results.first)
         return {
-            :id => results.first["id"].to_i,
-            :person_id => results.first["person_id"].to_i,
-            :company_id => results.first["company_id"].to_i,
+            "id" => results.first["id"].to_i,
+            "person_id" => results.first["person_id"].to_i,
+            "company_id" => results.first["company_id"].to_i,
         }
     end
 
@@ -32,15 +32,15 @@ class Job
             SQL
         )
         return {
-            :id => results.first["id"].to_i,
-            :person_id => results.first["person_id"].to_i,
-            :company_id => results.first["company_id"].to_i,
+            "id" => results.first["id"].to_i,
+            "person_id" => results.first["person_id"].to_i,
+            "company_id" => results.first["company_id"].to_i,
         }
     end
 
     def self.delete(id)
         results = DB.exec("DELETE FROM jobs WHERE id=#{id};")
-        return { deleted: true }
+        return { "deleted" => true }
     end
 
     def self.update(id, opts={})
@@ -53,9 +53,9 @@ class Job
             SQL
         )
         return {
-            :id => results.first["id"].to_i,
-            :person_id => results.first["person_id"].to_i,
-            :company_id => results.first["company_id"].to_i,
+            "id" => results.first["id"].to_i,
+            "person_id" => results.first["person_id"].to_i,
+            "company_id" => results.first["company_id"].to_i,
         }
     end
 end
