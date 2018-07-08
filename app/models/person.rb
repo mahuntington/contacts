@@ -47,11 +47,11 @@ class Person
                 people.push(new_person)
             end
             if result["company_id"]
-                employer = Company.new({
-                    "id" => result["company_id"],
+                employer = {
+                    "id" => result["company_id"].to_i,
                     "name" => result["company"],
                     "industry" => result["industry"]
-                })
+                }
                 people.last["employers"].push(employer)
             end
         end
@@ -94,11 +94,11 @@ class Person
         employers = []
         results.each do |result|
             if result["company_id"]
-                employers.push(Company.new({
-                    "id" => result["company_id"],
+                employers.push( {
+                    "id" => result["company_id"].to_i,
                     "name" => result["company"],
-                    "industry" => result["industry"],
-                }))
+                    "industry" => result["industry"]
+                })
             end
         end
         person =  {

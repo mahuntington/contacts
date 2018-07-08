@@ -1,16 +1,6 @@
 class Company
-    attr_reader :id, :name, :industry, :employees
     # connect to postgres
-    DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
-
-    def initialize(opts = {})
-        @id = opts["id"].to_i
-        @name = opts["name"]
-        @industry = opts["industry"]
-        if opts["employees"]
-            @employees = opts["employees"]
-        end
-    end
+    DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'contacts'})
 
     def self.all
         results = DB.exec(
@@ -31,17 +21,17 @@ class Company
         last_company_id = nil;
         results.each do |result|
             if result["id"] != last_company_id
-                company = Company.new({
-                    "id" => result["id"],
+                company = {
+                    "id" => result["id"].to_i,
                     "name" => result["name"],
                     "industry" => result["industry"],
                     "employees" => []
-                });
+                };
                 companies.push(company)
                 last_company_id = result["id"]
             end
             if result["person_id"]
-                companies.last.employees.push({
+                companies.last["employees"].push({
                     "id" => result["person_id"].to_i,
                     "name" => result["person_name"],
                     "age" => result["age"].to_i,
@@ -76,12 +66,12 @@ class Company
                 })
             end
         end
-        return Company.new({
-            "id" => results.first["id"],
+        return {
+            "id" => results.first["id"].to_i,
             "name" => results.first["name"],
             "industry" => results.first["industry"],
             "employees" => employees
-        })
+        }
     end
 
     def self.create(opts={})
@@ -92,12 +82,16 @@ class Company
                 RETURNING id, name, industry;
             SQL
         )
-        return Company.new(results.first)
+        return {
+            "id" => results.first["id"].to_i,
+            "name" => results.first["name"],
+            "industry" => results.first["industry"]
+        }
     end
 
     def self.delete(id)
         results = DB.exec("DELETE FROM companies WHERE id=#{id};")
-        return { deleted: true }
+        return { "deleted" => true }
     end
 
     def self.update(id, opts={})
@@ -109,6 +103,10 @@ class Company
                 RETURNING id, name, industry;
             SQL
         )
-        return Company.new(results.first)
+        return {
+            "id" => results.first["id"].to_i,
+            "name" => results.first["name"],
+            "industry" => results.first["industry"]
+        }
     end
 end
