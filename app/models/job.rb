@@ -1,6 +1,6 @@
 class Job
     # connect to postgres
-    DB = PG.connect(host: "localhost", port: 5432, dbname: 'contacts')
+    DB = PG.connect({:host => "localhost", :port => 5432, :dbname => 'contacts'})
 
     def self.all
         results = DB.exec("SELECT * FROM jobs;")
